@@ -23,32 +23,7 @@ These are **not** template fillers. They behave like a senior architect in a rev
 
 ## Typical workflow
 
-```mermaid
-flowchart TD
-    Start([New system or thin context?]) -->|yes| Discovery
-    Start -->|no| C4
-
-    Discovery["/adr-discovery<br/><i>Q&A, zero hallucination</i>"]
-    Discovery --> OQ[(docs/architecture/<br/>open-questions.md)]
-    Discovery --> C4
-
-    C4["/c4-model<br/><i>canonical LikeC4</i>"]
-    C4 --> Diagrams[(likec4/*.c4)]
-    C4 --> Draft
-
-    Draft["/draft-adr<br/><i>6-phase, self-critiques before save</i>"]
-    Draft --> ADR[(docs/adr/NNNN-*.md)]
-
-    ADR -.->|auditing legacy ADR later| Critique["/adr-critique<br/><i>line-level flags</i>"]
-
-    classDef skill fill:#1f6feb,stroke:#0d419d,color:#fff,stroke-width:2px;
-    classDef artifact fill:#f6f8fa,stroke:#57606a,color:#24292f;
-    classDef start fill:#2da44e,stroke:#1a7f37,color:#fff;
-
-    class Discovery,C4,Draft,Critique skill;
-    class OQ,Diagrams,ADR artifact;
-    class Start start;
-```
+![deep-adr typical workflow](media/images/flow-chart.png)
 
 ## What makes these different
 
