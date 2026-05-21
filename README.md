@@ -6,6 +6,8 @@ These are **not** template fillers. They behave like a senior architect in a rev
 
 ![deep-adr — four skills for Architecture Decision Records](media/images/deep-adr.png)
 
+[![skills.sh](https://skills.sh/b/janmohammadi/deep-adr)](https://skills.sh/janmohammadi/deep-adr)
+
 ## Quick start
 
 ```bash
