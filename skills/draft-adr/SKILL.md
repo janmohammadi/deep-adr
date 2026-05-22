@@ -240,33 +240,37 @@ Wait.
 
 When all sections approved, move to self-critique.
 
-### Phase 6. Self-Critique — ONE violation at a time (MANDATORY)
+### Phase 6. Self-Critique — silent pass, single review
 
-Scan your own draft against the ADR-IS-NOT checklist. Do NOT list all violations at once.
+The architect already confirmed every section in Phase 5. Do NOT replay each ADR-IS-NOT violation as a separate Q&A — that's pure friction.
 
-**Step 6.1** — find the first violation in your draft. One message:
+**Step 6.1** — scan your own draft against the ADR-IS-NOT checklist. Apply the rewrites silently. Keep a short internal list of what you changed and why.
+
+**Step 6.2** — present the revised draft IN FULL in one message, with a brief change log appended:
+
+> "Self-review complete. Applied N rewrites:
+> - [line ref] «rule violated» → tightened.
+> - [line ref] «rule violated» → cut.
+>
+> Final draft:
+>
+> «full ADR»
+>
+> Accept and save as `NNNN-title.md`? (yes / no / revise <which line>)"
+
+Wait. If `revise <line>`, fix only that line and re-show the draft. If `no`, ask which rewrite to back out.
+
+**Exception — load-bearing violation.** If the draft still contains a `missing-why` or a corporate-passive-voice Decision sentence after your silent pass (i.e., you couldn't tighten it without changing meaning), surface that ONE flag separately before showing the full draft:
 
 ```
-FLAG 1:
+BLOCKER:
 - Original:  "«exact quote»"
-- Violates:  «which rule»
-- Rewrite:   "«tighter version»"
-- Apply? (yes / no / modified)
+- Violates:  «missing-why | passive Decision»
+- Rewrite:   "«proposed tighter version»"
+- Apply / modify / keep as-is?
 ```
 
-Wait.
-
-**Step 6.2** — next violation. Same format. One at a time.
-
-**Step 6.3** — when no more violations are found, say:
-
-> "Self-review complete. N rewrites applied. Here's the final draft:"
-
-Then show the draft IN FULL (this is the one time a long message is OK — it's the finished artifact, not a process step). Ask:
-
-> "Save as `NNNN-title.md` in `docs/adr/`?"
-
-Wait.
+Wait. Then continue to Step 6.2.
 
 ### Phase 7. Save
 

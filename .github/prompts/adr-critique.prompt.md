@@ -45,19 +45,55 @@ The architect names one ADR file (batch mode is out of scope for v1).
 
 Read it. Also read any neighbors referenced via `supersedes`, `amends`, or `relates-to` — you need them for the consistency check in phase 4.
 
-### 2. Line-by-line flag against ADR-IS-NOT
+### 2. Flag against ADR-IS-NOT — batched for surface, one-at-a-time for load-bearing
 
-Walk every line of the target ADR. For each violating line:
+Walk every line of the target ADR. Sort violations into two buckets:
+
+**Surface violations** (batch these — they don't change meaning):
+- Filler / marketing words ("leverage", "robust", "seamless", "best-in-class").
+- Hedging ("might be good to consider", "potentially").
+- Tutorial / implementation detail that can be cut without losing the decision.
+- Length — Context > 3 sentences, Decision > 3 sentences, etc.
+
+Present the surface flags as one numbered list in a single message:
 
 ```
-FLAG [line N]:
-  Original:  <exact quote, including formatting>
-  Violates:  <which rule from the ADR-IS-NOT list>
-  Rewrite:   <tighter version, in the same voice>
-  Apply?     <wait for architect: yes / no / modified>
+SURFACE FLAGS (batched — answer per line: yes / no / modified):
+
+1. [line 12]
+   Original:  "leverage best-in-class queueing"
+   Violates:  marketing
+   Rewrite:   "use Kafka"
+
+2. [line 18]
+   Original:  "it might be good to consider potentially..."
+   Violates:  hedging
+   Rewrite:   "we will..."
+
+3. ...
+
+Reply with line numbers + decisions (e.g., "1 yes, 2 modified: ..., 3 no").
 ```
 
-Do NOT bulk-list flags and ask at the end. Go one at a time. If the architect says "no" or modifies the rewrite, move on — don't argue per-line unless the violation is load-bearing (e.g., corporate passive voice in the Decision section).
+Wait for the architect's batched reply. Apply approved rewrites at the end of phase 2.
+
+**Load-bearing violations** (one-at-a-time — they change the decision's substance):
+- Missing-why in the Decision section.
+- Corporate passive voice in the Decision section ("It was decided").
+- Probability-weighted justification ("most teams do it this way").
+- Future-proofing essay material in Context or Decision.
+
+For each load-bearing violation, go one at a time:
+
+```
+LOAD-BEARING FLAG [line N]:
+  Original:  <exact quote>
+  Violates:  <which rule>
+  Rewrite:   <tighter version>
+  Apply?     <yes / no / modified>
+```
+
+Wait per flag — these are worth the round trip. If the architect says "no", push back once per the patterns below; if they hold, move on.
 
 ### 3. Missing-why check
 
