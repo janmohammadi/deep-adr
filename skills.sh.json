@@ -1,0 +1,15 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "groupings": [
+    {
+      "title": "Architecture Decision Records",
+      "description": "A family of skills that co-think Architecture Decision Records with the architect — challenging, pushing back, and refusing to write an ADR until the reasoning holds up.",
+      "skills": [
+        "adr-discovery",
+        "draft-adr",
+        "adr-critique",
+        "c4-model"
+      ]
+    }
+  ]
+}
