@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "deep-adr",
+  "displayName": "Deep ADR",
+  "description": "Four co-thinking skills for Architecture Decision Records: adr-discovery, draft-adr, adr-critique, and c4-model. Behaves like a senior architect in review.",
+  "author": {
+    "name": "Reza Janmohammadi",
+    "url": "https://github.com/janmohammadi"
+  },
+  "homepage": "https://github.com/janmohammadi/deep-adr",
+  "repository": "https://github.com/janmohammadi/deep-adr",
+  "license": "MIT",
+  "keywords": ["adr", "architecture", "decision-records", "c4", "likec4"]
+}

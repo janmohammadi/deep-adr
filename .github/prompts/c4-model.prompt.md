@@ -1,5 +1,5 @@
 ---
-description: 'Generate a canonical-C4 LikeC4 model from confirmed architectural elements and relationships. Produces Context and Container views, optionally Deployment. Refuses Component views, custom element kinds, and other LikeC4 features that deviate from Simon Brown C4 conventions. Use after /adr-discovery or when grounding an ADR in a diagram.'
+description: 'Generate a canonical-C4 LikeC4 model reflected from confirmed architectural elements, relationships, and embedded ADL assertions. Produces Context and Container views, optionally Deployment. Refuses Component views, custom element kinds, and other LikeC4 features that deviate from Simon Brown C4 conventions.'
 name: 'c4-model'
 agent: 'agent'
 ---
@@ -22,6 +22,8 @@ When this skill says:
 - **System** — the bounded software product being modelled. Exactly ONE per file.
 - **Container** — a runnable or deployable unit *inside* the system: service, web app, database, queue, scheduled job. NOT a code class. NOT a Docker container specifically — the C4 term predates Docker.
 - **Relationship** — a directed interaction between two elements. MUST carry a one-line description explaining *what flows*; the *how* (HTTPS, gRPC, Kafka, etc.) goes in the `technology` attribute.
+- **ADL** — Architecture Definition Language: compact, declarative "what must hold" assertions embedded in an ADR when a decision creates enforceable architectural facts. This skill reflects ADL blocks into LikeC4 where the assertions describe systems, services, relationships, or deployment topology.
+- **Architecture Contract** — the ADR section that contains ADL assertions with inline `check` metadata only. This skill reflects the ADL into LikeC4 and adds LikeC4 links back to the ADR; ADRs do not include a Model subsection.
 
 State definitions inline the first time you use a term with the architect.
 
@@ -121,10 +123,11 @@ If the architect pushes back:
 
 ### 1. Intake
 
-Accept one of two inputs:
+Accept one of three inputs:
 
 - **(a)** A `CONFIRMED` context brief from `/adr-discovery` (preferred) — read `docs/architecture/discovery-brief.md` directly. Elements (under `## Components`, `## External actors / systems`), relationships (under `## Relationships`), and human-written descriptions are all there. Use the brief as-is — do not re-ask what's already confirmed.
-- **(b)** A fresh back-and-forth walkthrough if no brief exists. Same zero-hallucination rule as `/adr-discovery`:
+- **(b)** Embedded ADL blocks from ADR Architecture Contract sections. Treat them as confirmed only for objective assertions explicitly present in the ADR; do not infer missing relationships, responsibilities, or technologies from them. Reflect ADL assertions into LikeC4 when they name systems, services, relationships, or deployment topology; keep inline `check` metadata as ADR/fitness metadata, not diagram structure.
+- **(c)** A fresh back-and-forth walkthrough if no brief exists. Same zero-hallucination rule as `/adr-discovery`:
   1. Ask for the system-in-focus name.
   2. Walk external actors one at a time, confirm each.
   3. Walk external systems one at a time, confirm each.
@@ -179,6 +182,7 @@ model {
     api = container "API" {
       description "Orchestrates orders, inventory, payments"
       technology "Node.js REST"
+      link ../docs/adr/0007-checkout-architecture-contract.md "ADR-0007"
     }
     db = container "Database" {
       description "Orders, products, customers"
@@ -286,9 +290,17 @@ If validation fails, show the error. Fix it (ask the architect if the fix is amb
 
 ### 7. Render guidance
 
+When the generated or updated model is grounded in an ADR, add LikeC4 `link` metadata from affected elements or views back to the ADR file. For existing elements in another file, use `extend`:
+
+```likec4
+extend shop.api {
+  link ../docs/adr/0007-checkout-architecture-contract.md "ADR-0007"
+}
+```
+
 After validation passes, print exactly:
 
-> Render with: `npx likec4 start` (live preview) or `npx likec4 serve` (static serve). Open the printed URL. Take a screenshot of the Context and Container views and link them from the ADR's Context section if helpful.
+> Render with: `npx likec4 start` (live preview) or `npx likec4 serve` (static serve). Open the printed URL. The diagram links back to the ADR via LikeC4 `link` metadata.
 
 ### 8. Drift check back to ADRs
 
@@ -297,6 +309,10 @@ Glob `docs/adr/`, `docs/decisions/`, `docs/architecture/decisions/`, `adr/`.
 If any confirmed component names don't appear in existing ADRs (or vice versa), flag it:
 
 > "The LikeC4 model names components `[X, Y, Z]`. These don't appear in any existing ADR. Either run `/adr-critique` on the affected ADRs to reconcile naming, or the ADRs may have drifted from the actual architecture."
+
+If a LikeC4 element/view reflects an ADR's ADL assertions but has no link back to that ADR, flag it:
+
+> "This model reflects ADR-NNNN but has no LikeC4 link back to the ADR. Add `link <adr-path> \"ADR-NNNN\"` to the affected element or view."
 
 ---
 

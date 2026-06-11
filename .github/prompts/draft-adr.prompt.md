@@ -1,5 +1,5 @@
 ---
-description: 'Co-think an Architecture Decision Record with the architect through STRICT back-and-forth — one question per message, never a wall of text. Reads docs/architecture/discovery-brief.md so it doesn''t re-ask what''s already confirmed. Refuses to write until project context is sufficient and reasoning holds up. Self-critiques own output before saving.'
+description: 'Co-think an Architecture Decision Record with the architect through STRICT back-and-forth — one question per message, never a wall of text. Reads docs/architecture/discovery-brief.md so it doesn''t re-ask what''s already confirmed. Drafts an ADL-aware Architecture Contract when the decision creates enforceable assertions. Self-critiques before saving.'
 name: 'draft-adr'
 agent: 'agent'
 ---
@@ -47,6 +47,8 @@ When this skill says:
 - **Tension** — two ADRs make incompatible choices in the same area without `supersedes`.
 - **RFC** — Request For Comments. ADR opened for stakeholder review with a feedback deadline before being marked Proposed/Accepted. Use when cost / cross-team / security thresholds may be crossed.
 - **Fitness function** — an automated check (test, lint rule, CI assertion) that verifies the decision is still in force in the code.
+- **ADL** — Architecture Definition Language: a compact, declarative "what must hold" block embedded in an ADR when the decision creates enforceable architectural assertions. It is a thin convention, not a formal grammar.
+- **Architecture Contract** — the ADR section that replaces Compliance. It contains optional ADL assertions with inline `check` metadata only. If there is no enforceable assertion, say so directly. LikeC4 diagrams link back to the ADR; ADRs do not include a Model subsection.
 
 State each definition the first time you use the term in conversation.
 
@@ -205,7 +207,7 @@ Do NOT emit the full ADR in one message. Walk section by section.
 
 **Step 5.0** — tell the architect the flow, in one line:
 
-> "I'll draft Context → Decision → Consequences → Compliance → Alternatives, one section at a time. Confirm each before I move on."
+> "I'll draft Context → Decision → Consequences → Architecture Contract → Alternatives, one section at a time. Confirm each before I move on."
 
 **Step 5.1** — Context. One message, max 3 sentences.
 
@@ -225,9 +227,15 @@ Wait.
 
 Wait.
 
-**Step 5.4** — Compliance. One message, 1-3 sentences. Fitness function code snippet allowed here only.
+**Step 5.4** — Architecture Contract. One message. Keep it compact:
 
-> "**Compliance:** «how this is enforced». OK?"
+- **ADL** — include a fenced `adl` block only when the decision creates measurable or enforceable architectural assertions.
+- For each assertion, include an indented `check` line with manual review or fitness function, trigger/venue, owner, and severity (`feedback` or `stop`).
+- Do not include a Model or Reflected Model subsection. `/c4-model` reflects the ADL into LikeC4 and adds diagram-to-ADR links.
+
+If there is no enforceable assertion, write exactly: `No enforceable architecture contract for this ADR.`
+
+> "**Architecture Contract:** «ADL assertions with inline checks — or no enforceable contract». OK?"
 
 Wait.
 
@@ -288,7 +296,7 @@ After save, one line:
 
 ## Template (for Phase 5)
 
-```markdown
+````markdown
 ---
 title: "Short imperative title"
 status: proposed
@@ -318,11 +326,16 @@ What did we decide? Active voice. (≤ 3 sentences)
 
 What changes as a result? What trade-offs are we accepting? (bullets)
 
-## Compliance
+## Architecture Contract
 
-How will this decision be measured and enforced? Manual review, or fitness
-function? If automated, state where. (1–3 sentences; fitness function code
-snippet allowed here only)
+```adl
+system "<system>"
+  service "<deployable unit>"
+    assert <assertion id>: <objective architectural fact>
+      check <manual_review | fitness_function> trigger <where/when> owner "<team/person>" severity <feedback|stop>
+```
+If the decision has no enforceable architectural assertions, write:
+`No enforceable architecture contract for this ADR.`
 
 ## Alternatives Considered
 
@@ -333,7 +346,7 @@ Brief summary of rejected options and why rejected. (bullets)
 - Author: [name]
 - Approved: [date, by whom]
 - Last updated: [date]
-```
+````
 
 Status values: `proposed | rfc | accepted | superseded | deprecated`. If `rfc`, also include `rfc-deadline: YYYY-MM-DD` in frontmatter.
 
@@ -345,7 +358,8 @@ Status values: `proposed | rfc | accepted | superseded | deprecated`. If `rfc`, 
 An ADR is NOT:
 - A tutorial. Don't explain what REST is, what a queue is, what Kafka does.
 - An implementation guide. No code snippets except fitness functions.
-  No config samples, no API signatures, no deployment commands.
+  Compact ADL assertions with inline check metadata are allowed.
+  No full LikeC4 DSL, config samples, API signatures, or deployment commands.
 - A marketing doc. No "leverage", "robust", "scalable", "enterprise-grade",
   "best-in-class", "industry-leading", "seamless", "cutting-edge".
 - A hedge. No "it might be good to consider potentially evaluating...".

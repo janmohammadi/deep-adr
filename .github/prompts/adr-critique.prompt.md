@@ -1,5 +1,5 @@
 ---
-description: 'Audit an EXISTING or LEGACY ADR that wasn''t written through /draft-adr — flag filler, hedging, implementation detail, missing why, inconsistency with other ADRs, and LikeC4 drift. Produces line-level rewrite suggestions for human review. Not needed on ADRs drafted via /draft-adr (which self-critiques).'
+description: 'Audit an EXISTING or LEGACY ADR that wasn''t written through /draft-adr — flag filler, hedging, implementation detail, missing why, weak Architecture Contracts, inconsistency with other ADRs, and LikeC4 drift. Produces line-level rewrite suggestions for human review.'
 name: 'adr-critique'
 agent: 'agent'
 ---
@@ -34,6 +34,8 @@ When this skill says:
 - **Tension** — two ADRs make incompatible choices in the same area without one declaring `supersedes` over the other.
 - **Missing-why** — the Decision section justifies itself with "best practice" or "industry standard" instead of naming the business concern → architectural characteristic trade-off that drove it.
 - **Drift** — the ADR names components that don't exist in the LikeC4 model, or vice versa. Signal that the ADR or the model is stale.
+- **ADL** — Architecture Definition Language: compact, declarative "what must hold" assertions embedded in an ADR when a decision creates enforceable architectural facts. It is a thin convention, not a formal grammar.
+- **Architecture Contract** — the ADR section that replaces Compliance. It contains optional ADL assertions with inline `check` metadata only. LikeC4 diagrams link back to the ADR; ADRs do not include a Model subsection.
 
 ---
 
@@ -119,7 +121,20 @@ Using the neighbors you read in phase 1:
 - If this ADR overlaps another and neither declares a `relates-to` with a reason → flag as a **missing relationship**.
 - If two ADRs both claim to be the authoritative decision in the same area, surface it for the architect to resolve.
 
-### 5. LikeC4 drift check
+### 5. Architecture Contract check
+
+Read the Architecture Contract section if present. If the ADR still uses `## Compliance`, flag it as stale section naming and suggest `## Architecture Contract`.
+
+Flag these issues:
+
+- The ADR makes a measurable architectural claim but has no ADL assertion.
+- An ADL assertion has no inline `check` line with trigger/venue, owner, and severity.
+- A check names a fitness function or manual review but is not nested under a specific assertion.
+- The ADR includes a `Model` / `Reflected Model` subsection. Suggest removing it; `/c4-model` should add links from LikeC4 elements/views back to the ADR.
+- The ADR embeds full LikeC4 DSL.
+- The contract is implementation-heavy: config samples, API signatures, deployment commands, or model DSL.
+
+### 6. LikeC4 drift check
 
 Glob `**/*.c4`, `likec4.config.*`, `model/**/*.c4`. If a LikeC4 model exists:
 
@@ -132,7 +147,7 @@ For each drift, suggest:
 
 Do not propose one or the other — the architect decides which is the source of truth for this area.
 
-### 6. Apply approved changes
+### 7. Apply approved changes
 
 Only after the architect has gone through the flags and approved specific rewrites, edit the ADR file.
 
@@ -150,7 +165,8 @@ This is the canonical home of the rules. `/draft-adr` and `/adr-discovery` refer
 An ADR is NOT:
 - A tutorial. Don't explain what REST is, what a queue is, what Kafka does.
 - An implementation guide. No code snippets except fitness functions.
-  No config samples, no API signatures, no deployment commands.
+  Compact ADL assertions with inline check metadata are allowed.
+  No full LikeC4 DSL, config samples, API signatures, or deployment commands.
 - A marketing doc. No "leverage", "robust", "scalable", "enterprise-grade",
   "best-in-class", "industry-leading", "seamless", "cutting-edge".
 - A hedge. No "it might be good to consider potentially evaluating...".

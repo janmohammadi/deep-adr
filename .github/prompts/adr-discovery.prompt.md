@@ -1,5 +1,5 @@
 ---
-description: 'Gather project context before drafting an ADR — business domain, system landscape, existing ADRs, related repos, LikeC4 model. Run BEFORE draft-adr when the architect is new to the system or context is thin. Back-and-forth Q&A with zero hallucination; every fact confirmed by the human is written immediately to docs/architecture/discovery-brief.md so nothing is forgotten.'
+description: 'Gather project context before drafting an ADR — business domain, system landscape, existing ADRs, related repos, LikeC4 model, and Architecture Contract facts. Run BEFORE draft-adr when the architect is new to the system or context is thin. Zero-hallucination Q&A; confirmed facts are written immediately to docs/architecture/discovery-brief.md.'
 name: 'adr-discovery'
 agent: 'agent'
 ---
@@ -36,6 +36,8 @@ When this skill says:
 - **Architectural characteristic** — a non-functional quality the architecture optimizes for: performance, maintainability, security, time-to-market, cost, scalability. The decision under review is usually pressuring one of these.
 - **Tension** — two ADRs make incompatible choices in the same area without one declaring `supersedes` over the other.
 - **RFC** — Request For Comments. An ADR opened for stakeholder review with a feedback deadline, before being marked Proposed/Accepted. Use when cost / cross-team / security thresholds may be crossed.
+- **ADL** — Architecture Definition Language: compact, declarative "what must hold" assertions embedded in an ADR when a decision creates enforceable architectural facts. It is a thin convention, not a formal grammar.
+- **Architecture Contract** — the ADR section that replaces Compliance. It contains optional ADL assertions with inline `check` metadata only. LikeC4 diagrams link back to the ADR; ADRs do not include a Model subsection.
 
 **State each definition the first time you use the term in conversation** — don't assume the architect uses your vocabulary.
 
@@ -135,7 +137,7 @@ Repos aren't the only place architectural context lives. Ask:
 > - **Architecture overview** — Confluence/Notion page, internal wiki, system landscape doc?
 > - **Service/component registry** — Backstage, internal catalog, dependency map?
 > - **Platform / org-level ADRs** — decisions made by a platform team or architecture board that this decision must respect?
-> - **Compliance constraints** — any standards or fitness functions that apply org-wide?"
+> - **Architecture contract constraints** — any standards, ADL assertions, checks, diagram backlink expectations, or verification owners that apply org-wide?"
 
 For each confirmed source: log to `## Ecosystem references` in the brief. For each unanswered → PARKED open question with the wiki URL or contact as "Where to look".
 
@@ -143,7 +145,7 @@ For each confirmed source: log to `## Ecosystem references` in the brief. For ea
 
 ### 7. Checklist gate
 
-Walk the 5 Discovery MUSTs one at a time. Mark each `CONFIRMED / DISPUTED / UNKNOWN`. Confirmed entries should already be in the brief from earlier phases — verify they're there.
+Walk the Discovery MUSTs one at a time. Mark each `CONFIRMED / DISPUTED / UNKNOWN`. Confirmed entries should already be in the brief from earlier phases — verify they're there.
 
 For any `UNKNOWN`, invoke the **Open-Questions mechanism** (see below). Do not fabricate answers.
 
@@ -158,11 +160,12 @@ MUST know before drafting:
 - Any existing ADR touching the same area (supersedes / amends / relates-to / tension).
 - Who decides — architect alone, or RFC / review board (cost, cross-team,
   security thresholds).
+- If this decision creates enforceable assertions: the measurable facts, check trigger/venue, owner, severity, and any diagram elements/views that should link back to the ADR.
 
 NICE to know:
 - Team size and skill profile.
 - Timeline pressure.
-- Compliance / regulatory constraints.
+- Regulatory constraints.
 - Whether the project spans other repos, and if so, their names.
 ```
 
@@ -406,6 +409,9 @@ confirmed.
 ## Decision-makers / governance
 - [CONFIRMED YYYY-MM-DD] <architect alone | RFC | review board>
 
+## Architecture Contract facts
+- [CONFIRMED YYYY-MM-DD] Assertion: <assertion id>: <objective architectural fact>. Check: <manual review | fitness function>; trigger: <where/when>; owner: <team/person>; severity: <feedback|stop>; diagram backlink target: <LikeC4 element/view or unknown>.
+
 ---
 
 Open questions: see [open-questions.md](open-questions.md)
@@ -470,7 +476,8 @@ This skill doesn't write ADRs, but it prepares the ground. The drafting skill (`
 An ADR is NOT:
 - A tutorial. Don't explain what REST is, what a queue is, what Kafka does.
 - An implementation guide. No code snippets except fitness functions.
-  No config samples, no API signatures, no deployment commands.
+  Compact ADL assertions with inline check metadata are allowed.
+  No full LikeC4 DSL, config samples, API signatures, or deployment commands.
 - A marketing doc. No "leverage", "robust", "scalable", "enterprise-grade",
   "best-in-class", "industry-leading", "seamless", "cutting-edge".
 - A hedge. No "it might be good to consider potentially evaluating...".
